@@ -1,0 +1,31 @@
+version: "3.8"
+services:
+
+  # base images
+  # flask_service:
+  #   build:
+  #     context: ../shared/flask
+  #   image: flask_service:python-3.10-slim-bullseye
+  #   restart: "no"
+  #   deploy:
+  #     replicas: 0
+
+  service1:
+    # image: kennethreitz/httpbin
+    build:
+      context: .
+      dockerfile: Dockerfile-httpbin
+    ports:
+      - "8000:8000"
+
+  # front-proxy
+  front-envoy:
+    build:
+      context: .
+      dockerfile: Dockerfile-frontenvoy
+    volumes:
+      - ./front-envoy.yaml:/etc/front-envoy.yaml
+    ports:
+      - "${PORT_PROXY:-8080}:8080"
+      - "${PORT_HTTPS:-8443}:8443"
+      - "${PORT_STATS:-8001}:8001"
